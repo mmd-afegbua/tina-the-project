@@ -1,0 +1,84 @@
+Description: >
+  Momodu Afegbua - Cloud DevOps Engineer Nanodegree - Capstone - April 2020
+  CloudFormation script to create a server for jenkins
+
+Parameters:
+  EnvironmentName:
+    Description: An Environment name that will be prefixed to resources
+    Type: String
+  KeyName:
+    Description: EC2 Keypair for Jenkins server
+    Type: String
+
+Resources:
+  JenkinsSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to ec2 and SHH access
+      VpcId:
+        Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-WASG
+
+  JenkinsEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt-get update -y
+          sudo apt-get install default-jdk wget -y
+          sudo apt-get install -y 
+          cd /home/ubuntu
+          wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+          sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+          sudo apt-get update -y
+          sudo apt-get install jenkins tidy -y
+          sudo systemctl status jenkins
+      SecurityGroupIds:
+        - Ref: JenkinsSG
+      SubnetId:
+        Fn::ImportValue: !Sub "${EnvironmentName}-SUBNET1"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdk"
+          Ebs:
+            VolumeSize: "10"
+            DeleteOnTermination: true
+            VolumeType: "gp2"
+      ImageId: ami-005bdb005fb00e791
+      InstanceType: t3.small
+      KeyName: !Ref KeyName
+  
+  JenkinsEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain:
+        Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
+
+  EIPAssociation0:
+    Type: AWS::EC2::EIPAssociation
+    DependsOn:
+      - JenkinsEC2
+      - JenkinsEIP
+    Properties:
+      InstanceId:
+        Ref: JenkinsEC2
+      AllocationId:
+        Fn::GetAtt:
+          - JenkinsEIP
+          - AllocationId
+
+Outputs:
+  Website:
+    Description: The Public DNS for the EC2 Instance
+    Value: !Join ['', ['http://', !GetAtt 'JenkinsEC2.PublicDnsName', ':8080']]
