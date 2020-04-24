@@ -13,7 +13,7 @@ Parameters:
     Description: Arguments to pass to the bootstrap script. See files/bootstrap.sh in https://github.com/awslabs/amazon-eks-ami
     Default: "--kubelet-extra-args --node-labels=nodetype=worker"
     Type: String
-    
+
 Resources:
 
   EKSClusterInstanceProfile:
@@ -66,11 +66,11 @@ Resources:
           - Fn::ImportValue: !Sub "${EnvironmentName}-PUB-SUB-1"
           - Fn::ImportValue: !Sub "${EnvironmentName}-PUB-SUB-2"
           - Fn::ImportValue: !Sub "${EnvironmentName}-PRI-SUB-1"
-          - Fn::ImportValue: !Sub "${EnvironmentName}-PRI-SUB-1"
           - Fn::ImportValue: !Sub "${EnvironmentName}-PRI-SUB-2"
       RoleArn: !GetAtt EKSClusterInstanceRole.Arn
       Version: 1.14
 
+# Worker Nodes Clusters
   WorkerNodeInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -203,7 +203,7 @@ Resources:
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
-            VolumeSize: 20
+            VolumeSize: 10
             VolumeType: gp2
             DeleteOnTermination: true
       UserData:
@@ -214,7 +214,7 @@ Resources:
             /etc/eks/bootstrap.sh ${AWS::StackName}-EKS-Cluster ${WorkerNodeBootstrapArguments}
             /opt/aws/bin/cfn-signal --exit-code $? \
                      --stack  ${AWS::StackName} \
-                     --resource NodeGroup  \
+                     --resource WorkerNodeGroup  \
                      --region ${AWS::Region}
 
   WorkerNodeGroup:

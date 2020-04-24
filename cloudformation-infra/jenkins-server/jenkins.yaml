@@ -37,18 +37,19 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           sudo apt-get update -y
-          sudo apt-get install default-jdk wget -y
-          sudo apt-get install -y 
-          cd /home/ubuntu
+          sudo apt-get install open-8-jdk -y
+          sudo apt-get install wget tidy -y
           wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
-          sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-          sudo apt-get update -y
-          sudo apt-get install jenkins tidy -y
-          sudo systemctl status jenkins
+          sudo apt-add-repository "deb https://pkg.jenkins.io/debian-stable binary/"
+          sudo apt-get update
+          sudo apt-get install jenkins -y
+          sudo systemctl start jenkins
+          sudo systemctl enable jenkins
+          
       SecurityGroupIds:
         - Ref: JenkinsSG
       SubnetId:
-        Fn::ImportValue: !Sub "${EnvironmentName}-SUBNET1"
+        Fn::ImportValue: !Sub "${EnvironmentName}-PUB-SUB-1"
       BlockDeviceMappings:
         - DeviceName: "/dev/sdk"
           Ebs:
@@ -65,7 +66,7 @@ Resources:
       Domain:
         Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
 
-  EIPAssociation0:
+  EIPAssociation:
     Type: AWS::EC2::EIPAssociation
     DependsOn:
       - JenkinsEC2
