@@ -2,5 +2,9 @@
     {
       "ParameterKey": "EnvironmentName",
       "ParameterValue": "tina-staging"
+    },
+    {
+        "Parameter": "KeyName",
+        "ParameterValue": " "
     }
   ]

@@ -1,7 +1,19 @@
----
-Description: >
+Description:
+  Momodu Afegbua - Cloud DevOps Engineer Nanodegree - Capstone - April 2020
+  Cluster configuration for the EKS
 
-
+Parameters:
+  EnvironmentName:
+    Description: This is the name for the environment
+    Type: String
+  KeyName:
+    Description: For ssh access into clusters
+    Type: String  
+  WorkerNodeBootstrapArguments:
+    Description: Arguments to pass to the bootstrap script. See files/bootstrap.sh in https://github.com/awslabs/amazon-eks-ami
+    Default: "--kubelet-extra-args --node-labels=nodetype=worker"
+    Type: String
+    
 Resources:
 
   EKSClusterInstanceProfile:
@@ -54,6 +66,8 @@ Resources:
           - Fn::ImportValue: !Sub "${EnvironmentName}-PUB-SUB-1"
           - Fn::ImportValue: !Sub "${EnvironmentName}-PUB-SUB-2"
           - Fn::ImportValue: !Sub "${EnvironmentName}-PRI-SUB-1"
+          - Fn::ImportValue: !Sub "${EnvironmentName}-PRI-SUB-1"
+          - Fn::ImportValue: !Sub "${EnvironmentName}-PRI-SUB-2"
       RoleArn: !GetAtt EKSClusterInstanceRole.Arn
       Version: 1.14
 
@@ -89,7 +103,7 @@ Resources:
       GroupDescription: Security group for all nodes in the cluster
       GroupName: !Join [ "", [ !Ref 'AWS::StackName', "-EKS-Worker-Node-Security-Group" ] ]
       VpcId:
-        Fn::ImportValue: !Sub "${Capstone}-VPCID"
+        Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
       Tags:
       - Key: !Sub "kubernetes.io/cluster/${AWS::StackName}-EKS-Cluster"
         Value: 'owned'
@@ -181,8 +195,8 @@ Resources:
     Properties:
       AssociatePublicIpAddress: 'False'
       IamInstanceProfile: !Ref WorkerNodeInstanceProfile
-      ImageId: !Ref WorkerNodeImageId
-      InstanceType: !Ref WorkerNodeInstanceType
+      ImageId: ami-0497f6feb9d494baf
+      InstanceType: t2.micro
       KeyName: !Ref KeyName
       SecurityGroups:
       - !Ref WorkerNodeSecurityGroup
@@ -214,7 +228,7 @@ Resources:
         Fn::Split:
                 - ","
                 - Fn::ImportValue:
-                      Fn::Sub: ${Capstone}-SUBNETS
+                      Fn::Sub: ${EnvironmentName}-SUBNETS
       Tags:
       - Key: Name
         Value: !Sub "${EKSCluster}-Worker-Node"
