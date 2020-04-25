@@ -36,7 +36,7 @@ Resources:
           Action:
           - sts:AssumeRole
       Path: "/"
-      RoleName: !Join [ "-", [ !Ref 'AWS::StackName', "EKS-Cluster-Role" ] ]
+#      RoleName: !Join [ "-", [ !Ref 'AWS::StackName', "EKS-Cluster-Role" ] ]
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
         - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
@@ -195,8 +195,8 @@ Resources:
     Properties:
       AssociatePublicIpAddress: 'False'
       IamInstanceProfile: !Ref WorkerNodeInstanceProfile
-      ImageId: ami-0497f6feb9d494baf
-      InstanceType: t2.micro
+      ImageId: 'ami-0f53c7a1236d06961'
+      InstanceType: t2.small
       KeyName: !Ref KeyName
       SecurityGroups:
       - !Ref WorkerNodeSecurityGroup
@@ -222,13 +222,13 @@ Resources:
     Properties:
       DesiredCapacity: 2
       LaunchConfigurationName: !Ref WorkerNodeLaunchConfig
-      MinSize: 2
+      MinSize: 1
       MaxSize: 3
       VPCZoneIdentifier:
         Fn::Split:
                 - ","
                 - Fn::ImportValue:
-                      Fn::Sub: ${EnvironmentName}-SUBNETS
+                      Fn::Sub: ${EnvironmentName}-SUBNET
       Tags:
       - Key: Name
         Value: !Sub "${EKSCluster}-Worker-Node"

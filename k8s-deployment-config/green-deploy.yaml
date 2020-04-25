@@ -1,5 +1,5 @@
-kind: ReplicationController
 apiVersion: v1
+kind: ReplicationController
 metadata: 
  name: green
  labels: 
@@ -16,7 +16,7 @@ spec:
    containers: 
     - 
    name: green
-     image: "mehmetincefidan/capstone"
+     image: "mmdafegbua/tina-the-project"
      ports: 
       - 
    name: "http-server"
