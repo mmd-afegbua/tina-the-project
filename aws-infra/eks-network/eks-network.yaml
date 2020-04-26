@@ -253,12 +253,20 @@ Resources:
       VpcId: !Ref VPC
 
 Outputs:
+    Description: AWS VPC ID
+    Value: !Ref VPC
+    Export:
+        Name: !Sub "${StackName}-VPCID"
+  PublicSubnet1:
+    Description: Public Subnet 1
+    Value: !Ref PublicSubnet1CIDR
+    Export:
+      Name: !Sub "${StackName}-PUB-SUB-1"       
   SubnetIds:
     Description: Subnets IDs in the VPC
     Value: !Join [ ",", [ !Ref PublicSubnet1, !Ref PublicSubnet2, !Ref PrivateSubnet1, !Ref PrivateSubnet2 ] ]
     Export: 
         Name: !Sub ${StackName}-SUBNETS
-
   SecurityGroups:
     Description: Security group for the cluster control plane communication with worker nodes
     Value: !Ref ControlPlaneSecurityGroup

@@ -1,0 +1,10 @@
+[
+    {
+      "ParameterKey": "StackName",
+      "ParameterValue": "tina-staging"
+    },
+    {
+      "ParameterKey": "KeyName",
+      "ParameterValue": "goodtest"
+    }
+  ]

@@ -1,0 +1,78 @@
+Description: >
+  Momodu Afegbua - Cloud DevOps Engineer Nanodegree - Capstone - April 2020
+  CloudFormation script to create a server for jenkins
+
+Parameters:
+  StackName:
+    Description: An Environment name that will be prefixed to resources
+    Type: String
+  KeyName:
+    Description: EC2 Keypair for Jenkins server
+    Type: String
+
+Resources:
+  JenkinsSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to ec2 and SHH access
+      VpcId:
+        Fn::ImportValue: !Sub "${StackName}-VPCID"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${StackName}-WASG
+
+  JenkinsEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt-get update -y
+          sudo apt-get install -y default-jdk
+          sudo apt-get install -y wget tidy
+      SecurityGroupIds:
+        - Ref: JenkinsSG
+      SubnetId:
+        Fn::ImportValue: !Sub "${StackName}-PUB-SUB-1"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdk"
+          Ebs:
+            VolumeSize: "10"
+            DeleteOnTermination: true
+            VolumeType: "gp2"
+      ImageId: ami-005bdb005fb00e791
+      InstanceType: t3.micro
+      KeyName: !Ref KeyName
+  
+  JenkinsEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain:
+        Fn::ImportValue: !Sub "${StackName}-VPCID"
+
+  EIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    DependsOn:
+      - JenkinsEC2
+      - JenkinsEIP
+    Properties:
+      InstanceId:
+        Ref: JenkinsEC2
+      AllocationId:
+        Fn::GetAtt:
+          - JenkinsEIP
+          - AllocationId
+
+Outputs:
+  JenkinsDNS:
+    Description: The Public DNS for the EC2 Instance
+    Value: !Join ['', ['http://', !GetAtt 'JenkinsEC2.PublicDnsName', ':8080']]
