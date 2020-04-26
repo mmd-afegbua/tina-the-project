@@ -37,15 +37,8 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           sudo apt-get update -y
-          sudo apt-get install open-8-jdk -y
-          sudo apt-get install wget tidy -y
-          wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
-          sudo apt-add-repository "deb https://pkg.jenkins.io/debian-stable binary/"
-          sudo apt-get update
-          sudo apt-get install jenkins -y
-          sudo systemctl start jenkins
-          sudo systemctl enable jenkins
-          
+          sudo apt-get install -y default-jdk
+          sudo apt-get install -y wget tidy
       SecurityGroupIds:
         - Ref: JenkinsSG
       SubnetId:
@@ -57,7 +50,7 @@ Resources:
             DeleteOnTermination: true
             VolumeType: "gp2"
       ImageId: ami-005bdb005fb00e791
-      InstanceType: t3.small
+      InstanceType: t3.micro
       KeyName: !Ref KeyName
   
   JenkinsEIP:
@@ -80,6 +73,6 @@ Resources:
           - AllocationId
 
 Outputs:
-  Website:
+  JenkinsDNS:
     Description: The Public DNS for the EC2 Instance
     Value: !Join ['', ['http://', !GetAtt 'JenkinsEC2.PublicDnsName', ':8080']]

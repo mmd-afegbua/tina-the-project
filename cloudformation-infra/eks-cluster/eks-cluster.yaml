@@ -196,7 +196,7 @@ Resources:
       AssociatePublicIpAddress: 'False'
       IamInstanceProfile: !Ref WorkerNodeInstanceProfile
       ImageId: 'ami-0f53c7a1236d06961'
-      InstanceType: t2.small
+      InstanceType: t2.micro
       KeyName: !Ref KeyName
       SecurityGroups:
       - !Ref WorkerNodeSecurityGroup
@@ -243,7 +243,7 @@ Resources:
 
 Outputs:
   EKSClusterName:
-    Description: The node instance role
+    Description: The name of the cluster
     Value: !Ref EKSCluster
   WorkNodesIAMRoleArn:
     Description: The node instance role

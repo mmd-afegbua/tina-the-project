@@ -5,8 +5,12 @@ metadata:
   namespace: kube-system
 data:
   mapRoles: |
-    - rolearn: arn:aws:iam::321382273430:role/tina-eksan-EKS-Worker-Node-Role
+    - rolearn: arn:aws:iam::321382273430:role/tina-eks-EKS-Worker-Node-Role
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers
         - system:nodes
+    - rolearn: arn:aws:iam::825317146186:role/mmd-cli
+      username: mmd
+      groups:
+        - system:masters        
