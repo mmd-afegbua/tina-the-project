@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ReplicationController
+metadata: 
+ name: blue
+ labels: 
+  app: blue
+spec: 
+ replicas: 1
+ selector: 
+  app: blue
+ template: 
+  metadata: 
+   labels: 
+    app: blue
+  spec: 
+   containers: 
+    - 
+   name: tina-blue
+     image: "mmdafegbua/tina-the-project"
+     ports: 
+      - 
+   name: "http-server"
+       containerPort: 80
