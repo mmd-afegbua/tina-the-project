@@ -28,6 +28,14 @@ pipeline {
 			}
 		}
 
+		stage('Remove Docker Image From Build Server') {
+			steps {
+				sh '''
+				    docker rmi mmdafegbua/tina-the-project
+				'''	
+			}
+		}
+
 		stage('Set Current Kubectl Context') {
 			steps {
 				withAWS(region:'us-west-2', credentials:'ecr_credentials') {
