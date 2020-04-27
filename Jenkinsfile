@@ -4,6 +4,7 @@ pipeline {
 		stage('Lint HTML') {
 			steps {
 				sh 'tidy -q -e *.html'
+                echo "Linting Dockerfile"
 			}
 		}
 		
@@ -38,7 +39,7 @@ pipeline {
 
 		stage('Set Current Kubectl Context') {
 			steps {
-				withAWS(region:'us-west-2', credentials:'ecr_credentials') {
+				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
 						kubectl config use-context arn:aws:eks:us-west-2:142977788479:cluster/capstonecluster
 					'''
@@ -46,47 +47,47 @@ pipeline {
 			}
 		}
 
-		stage('Deploy blue container') {
+		stage('Deploy to Blue') {
 			steps {
-				withAWS(region:'us-west-2', credentials:'ecr_credentials') {
+				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
-						kubectl apply -f ./blue-controller.json
+						kubectl apply -f ./k8s-deployment-config/blue-controller.json
 					'''
 				}
 			}
 		}
 
-		stage('Deploy green container') {
+		stage('Deploy To Green') {
 			steps {
-				withAWS(region:'us-west-2', credentials:'ecr_credentials') {
+				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
-						kubectl apply -f ./green-controller.json
+						kubectl apply -f ./k8s-deployment-config/green-controller.json
 					'''
 				}
 			}
 		}
 
-		stage('Create the service in the cluster, redirect to blue') {
+		stage('Create Service and Redirect to Blue') {
 			steps {
-				withAWS(region:'us-west-2', credentials:'ecr_credentials') {
+				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
-						kubectl apply -f ./blue-service.json
+						kubectl apply -f ./k8s-deployment-config/blue-service.json
 					'''
 				}
 			}
 		}
 
-		stage('Wait user approve') {
+		stage('CTO Approval') {
             steps {
                 input "Ready to redirect traffic to green?"
             }
         }
 
-		stage('Create the service in the cluster, redirect to green') {
+		stage('Create Service and Redirect to Blue') {
 			steps {
-				withAWS(region:'us-west-2', credentials:'ecr_credentials') {
+				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
-						kubectl apply -f ./green-service.json
+						kubectl apply -f ./k8s-deployment-config/green-service.json
 					'''
 				}
 			}
