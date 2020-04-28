@@ -41,10 +41,8 @@ pipeline {
 			steps {
 				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
-					    pip install --upgrade awscli
-					    aws eks --region us-west-2 update-kubeconfig --name EKSCluster-9fVO5lycvYR4
 						kubectl config set-context arn:aws:eks:us-west-2:321382273430:cluster/EKSCluster-9fVO5lycvYR4
-						kubectl apply -f k8s-deployment-config/aws-auth.yaml
+						kubectl apply -f k8s-deployment-config/aws-auth.yaml --kubeconfig=~/.kube/config
 					'''
 				}
 			}
