@@ -40,7 +40,7 @@ pipeline {
 		stage('Set Current Kubectl Context') {
 			steps {
 				environment { 
-					KUBECONFIG = '~/.kube/config'
+					KUBECONFIG='~/.kube/config'
 				}				
 				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
