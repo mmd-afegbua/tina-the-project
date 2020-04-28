@@ -5,7 +5,7 @@ metadata:
   namespace: tina
 data:
   mapRoles: |
-    - rolearn: arn:aws:iam::321382273430:role/tina-eks-EKS-Worker-Node-Role
+    - rolearn: arn:aws:iam::321382273430:role/tina-nodes-NodeInstanceRole-WU18QQFKQRWL
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers

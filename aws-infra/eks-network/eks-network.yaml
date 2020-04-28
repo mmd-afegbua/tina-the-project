@@ -33,6 +33,7 @@ Parameters:
     Description: CidrBlock for private subnet 02 within the VPC
 
 Resources:
+# VPC Resource
   VPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -43,6 +44,7 @@ Resources:
       - Key: Name
         Value: !Sub ${StackName}-VPC
 
+# Internet Gateway Resource
   InternetGateway:
     Type: "AWS::EC2::InternetGateway"
 
@@ -52,6 +54,7 @@ Resources:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref VPC
 
+# RouteTables
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -82,6 +85,7 @@ Resources:
       - Key: Network
         Value: Private02
 
+# Routes for Public and Private
   PublicRoute:
     DependsOn: VPCGatewayAttachment
     Type: AWS::EC2::Route
@@ -109,6 +113,31 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable02
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NatGateway02
+
+# Route Table Association
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable01
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable02
 
   NatGateway01:
     DependsOn:
@@ -222,30 +251,6 @@ Resources:
       - Key: Name
         Value: !Sub ${StackName}-PrivateSubnet2
 
-  PublicSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet1
-      RouteTableId: !Ref PublicRouteTable
-
-  PublicSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet2
-      RouteTableId: !Ref PublicRouteTable
-
-  PrivateSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet1
-      RouteTableId: !Ref PrivateRouteTable01
-
-  PrivateSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet2
-      RouteTableId: !Ref PrivateRouteTable02
-
   ControlPlaneSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -253,15 +258,12 @@ Resources:
       VpcId: !Ref VPC
 
 Outputs:
-    Description: AWS VPC ID
-    Value: !Ref VPC
-    Export:
-        Name: !Sub "${StackName}-VPCID"
   PublicSubnet1:
     Description: Public Subnet 1
     Value: !Ref PublicSubnet1CIDR
     Export:
       Name: !Sub "${StackName}-PUB-SUB-1"       
+
   SubnetIds:
     Description: Subnets IDs in the VPC
     Value: !Join [ ",", [ !Ref PublicSubnet1, !Ref PublicSubnet2, !Ref PrivateSubnet1, !Ref PrivateSubnet2 ] ]
