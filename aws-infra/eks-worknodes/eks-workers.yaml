@@ -2,6 +2,7 @@ Description:
   Momodu Afegbua - Cloud DevOps Engineer Nanodegree - Capstone - April 2020
   Worker Node Configuration
 Parameters:
+# Do well to update the EKSCluster-xxxxx in the userData
   StackName:
     Type: String
     Description: Name that will be prefixed to resource names.
@@ -13,7 +14,7 @@ Parameters:
 
   NodeAutoScalingGroupDesiredCapacity:
     Type: Number
-    Default: 1
+    Default: 3
     Description: Desired capacity of Node Group ASG.
 
   NodeAutoScalingGroupMaxSize:
@@ -198,7 +199,7 @@ Resources:
             - |
                 #!/bin/bash
                 set -o xtrace
-                /etc/eks/bootstrap.sh ${EksCluster} ${BootstrapArguments}
+                /etc/eks/bootstrap.sh EKSCluster-9fVO5lycvYR4 ${BootstrapArguments}
                 /opt/aws/bin/cfn-signal --exit-code $? \
                         --stack  ${AWS::StackName} \
                         --resource NodeGroup  \
