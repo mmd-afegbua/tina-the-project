@@ -24,16 +24,9 @@ pipeline {
 					sh '''
 						docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 						docker push mmdafegbua/tina-the-project
+                        docker rmi mmdafegbua/tina-the-project
 					'''
 				}
-			}
-		}
-
-		stage('Remove Docker Image From Build Server') {
-			steps {
-				sh '''
-				    docker rmi mmdafegbua/tina-the-project
-				'''	
 			}
 		}
 
@@ -42,7 +35,6 @@ pipeline {
 				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
 						kubectl config set-context arn:aws:eks:us-west-2:321382273430:cluster/EKSCluster-9fVO5lycvYR4
-						aws eks --region us-west-2 update-kubeconfig --name EKSCluster-9fVO5lycvYR4
 					'''
 				}
 			}
