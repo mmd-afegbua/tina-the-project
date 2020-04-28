@@ -45,7 +45,7 @@ pipeline {
 				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
 						kubectl config set-context arn:aws:eks:us-west-2:321382273430:cluster/EKSCluster-9fVO5lycvYR4
-						kubectl apply -f k8s-deployment-config/aws-auth.yaml --kubeconfig=/.kube/config
+						kubectl apply -f k8s-deployment-config/aws-auth.yaml --client=true
 					'''
 				}
 			}
