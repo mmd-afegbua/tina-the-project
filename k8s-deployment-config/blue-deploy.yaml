@@ -14,10 +14,8 @@ spec:
     app: blue
   spec: 
    containers: 
-    - 
-   name: blue
-     image: "mmdafegbua/tina-the-project"
-     ports: 
-      - 
-   name: "http-server"
-       containerPort: 80
+    - name: blue
+      image: mmdafegbua/tina-the-project
+      ports: 
+      - name: "http-server"
+        containerPort: 80

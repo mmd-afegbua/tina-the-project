@@ -2,10 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tina-project
-  namespace: tina
+  namespace: default
 data:
   mapRoles: |
-    - rolearn: arn:aws:iam::321382273430:role/tina-nodes-NodeInstanceRole-WU18QQFKQRWL
+    - rolearn: arn:aws:iam::321382273430:role/tina-workers-NodeInstanceRole-YYIX6DOXP5YK
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers

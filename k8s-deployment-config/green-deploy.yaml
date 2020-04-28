@@ -14,10 +14,8 @@ spec:
     app: green
   spec: 
    containers: 
-    - 
-   name: green
-     image: "mmdafegbua/tina-the-project"
-     ports: 
-      - 
-   name: "http-server"
-       containerPort: 80
+    - name: green
+      image: "mmdafegbua/tina-the-project"
+      ports: 
+      - name: "http-server"
+        containerPort: 80
