@@ -83,7 +83,7 @@ pipeline {
             }
         }
 
-		stage('Create Service and Redirect to Blue') {
+		stage('Create Service and Redirect to Green') {
 			steps {
 				withAWS(region:'us-west-2', credentials:'tina-eks') {
 					sh '''
