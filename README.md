@@ -1,5 +1,4 @@
 # Tina, The Project
-### Capstone Project for Udacity Cloud DevOps Nanodegree, Momodu Afegbua. April, 2020
 
 ### Brief Summary
 ##### How about a story?
